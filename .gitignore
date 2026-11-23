@@ -1,0 +1,11 @@
+# Jangan unggah password / private database connection ke GitHub
+.env
+.env.*
+!.env.example
+.flask_secret
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.vercel/

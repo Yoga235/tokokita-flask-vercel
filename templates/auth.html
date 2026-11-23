@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Daftar Akun' if mode == 'register' else 'Masuk' }}{% endblock %}
+{% block content %}
+<div class="auth-layout">
+  <section class="auth-left">
+    <div class="brand large"><span class="brand-mark">T.</span> <span>Toko<span class="brand-light">Kita</span><small>MANAGEMENT SYSTEM</small></span></div>
+    <div class="auth-story"><div class="auth-kicker">SISTEM INFORMASI PENJUALAN</div><h1>Kelola tokomu.<br><span>Lebih mudah.</span></h1><p>Kelola inventaris barang, data pelanggan, transaksi penjualan, dan laporan dalam satu tempat.</p><div class="feature-chips"><span>✓ Inventaris</span><span>✓ Penjualan</span><span>✓ Laporan</span></div></div>
+    <div class="auth-footnote">PYTHON · FLASK · POSTGRESQL</div>
+  </section>
+  <section class="auth-right"><div class="auth-card"><div class="auth-small-icon">▦</div><div class="eyebrow">SELAMAT DATANG</div><h2>{{ 'Buat Akun Baru' if mode == 'register' else 'Masuk ke Akun' }}</h2><p class="subtitle">{{ 'Lengkapi informasi untuk mulai menggunakan aplikasi.' if mode == 'register' else 'Masukkan username dan password untuk melanjutkan.' }}</p>
+    <form method="post" class="form-stack"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><label>Username<input name="username" type="text" autocomplete="username" required minlength="3" maxlength="30" placeholder="Masukkan username" value="{{request.form.get('username', '')}}"></label><label>Password<input name="password" type="password" required minlength="8" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="Minimal 8 karakter"></label><button class="btn btn-primary btn-full" type="submit">{{ 'Daftar Sekarang' if mode == 'register' else 'Masuk Dashboard' }} <span>→</span></button></form>
+    <p class="switch-auth">{% if mode == 'register' %}Sudah memiliki akun? <a href="{{url_for('login')}}">Login di sini</a>{% else %}Belum memiliki akun? <a href="{{url_for('register')}}">Daftar di sini</a>{% endif %}</p>
+  </div></section>
+</div>
+{% endblock %}

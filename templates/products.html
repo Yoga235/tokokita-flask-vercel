@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Data Barang{% endblock %}{% block section %}DATA MASTER{% endblock %}
+{% block heading %}Data Barang{% endblock %}{% block subtitle %}Kelola produk, harga, dan jumlah stok secara terpusat.{% endblock %}
+{% block heading_action %}<a href="{{url_for('product_form')}}" class="btn btn-primary">＋ Tambah Barang</a>{% endblock %}
+{% block content %}
+<section class="panel"><div class="panel-header"><div><h2>Daftar Barang</h2><p>{{rows|length}} produk ditemukan</p></div><span class="count-chip">MASTER DATA</span></div>
+<div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama Barang</th><th class="align-right">Harga</th><th class="align-center">Stok</th><th class="align-right">Tindakan</th></tr></thead><tbody>{% for x in rows %}<tr><td><span class="code-chip">{{x.sku}}</span></td><td class="strong">{{x.name}}</td><td class="align-right">{{x.price|idr}}</td><td class="align-center"><span class="pill {% if x.stock == 0 %}pill-danger{% elif x.stock <=5 %}pill-warning{% else %}pill-success{% endif %}">{{x.stock}} unit</span></td><td><div class="actions"><a class="btn btn-sm btn-ghost" href="{{url_for('product_form',item_id=x.id)}}">Edit</a><form method="post" action="{{url_for('product_delete',item_id=x.id)}}" onsubmit="return confirm('Hapus barang ini?')"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button class="btn btn-sm btn-delete" type="submit">Hapus</button></form></div></td></tr>{% else %}<tr><td colspan="5" class="empty">Belum ada produk. Klik Tambah Barang untuk membuat data pertama.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

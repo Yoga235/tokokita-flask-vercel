@@ -1,8 +1,8 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "app.py": {
-      "excludeFiles": "{tests/**,**/__pycache__/**}"
+  "rewrites": [
+    {
+      "source": "/((?!style\\.css$).*)",
+      "destination": "/app"
     }
-  }
+  ]
 }

@@ -1,45 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
+<link rel="stylesheet" href="/style.css" />
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <title>{% block title %}TokoKita{% endblock %} • Sistem Toko</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-{% if current_user %}
-<div class="app-shell">
-  <aside class="sidebar">
-    <a href="{{url_for('dashboard')}}" class="brand"><span class="brand-mark">T.</span><span>Toko<span class="brand-light">Kita</span><small>MANAGEMENT SYSTEM</small></span></a>
-    <div class="nav-label">MENU UTAMA</div>
-    <nav class="side-nav">
-      <a class="{% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{url_for('dashboard')}}"><span>▦</span> Dashboard</a>
-      <div class="nav-label nav-group">DATA MASTER</div>
-      <a class="{% if request.endpoint in ('products','product_form') %}active{% endif %}" href="{{url_for('products')}}"><span>▤</span> Data Barang</a>
-      <a class="{% if request.endpoint in ('customers','customer_form') %}active{% endif %}" href="{{url_for('customers')}}"><span>♙</span> Data Pelanggan</a>
-      <div class="nav-label nav-group">OPERASIONAL</div>
-      <a class="{% if request.endpoint in ('sales','sale_form') %}active{% endif %}" href="{{url_for('sales')}}"><span>▣</span> Penjualan</a>
-      <a class="{% if request.endpoint in ('reports','report_export') %}active{% endif %}" href="{{url_for('reports')}}"><span>▥</span> Laporan</a>
-    </nav>
-    <div class="sidebar-bottom"><div class="avatar">{{ current_user[0]|upper }}</div><div class="user-meta"><strong>{{current_user}}</strong><small>Pengguna aktif</small></div>
-      <form method="post" action="{{url_for('logout')}}"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><button type="submit" class="logout" title="Logout">↪</button></form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>{% block title %}TokoKita{% endblock %} • Sistem Toko</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    {% if current_user %}
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a href="{{url_for('dashboard')}}" class="brand"
+          ><span class="brand-mark">T.</span
+          ><span
+            >Toko<span class="brand-light">Kita</span
+            ><small>MANAGEMENT SYSTEM</small></span
+          ></a
+        >
+        <div class="nav-label">MENU UTAMA</div>
+        <nav class="side-nav">
+          <a
+            class="{% if request.endpoint == 'dashboard' %}active{% endif %}"
+            href="{{url_for('dashboard')}}"
+            ><span>▦</span> Dashboard</a
+          >
+          <div class="nav-label nav-group">DATA MASTER</div>
+          <a
+            class="{% if request.endpoint in ('products','product_form') %}active{% endif %}"
+            href="{{url_for('products')}}"
+            ><span>▤</span> Data Barang</a
+          >
+          <a
+            class="{% if request.endpoint in ('customers','customer_form') %}active{% endif %}"
+            href="{{url_for('customers')}}"
+            ><span>♙</span> Data Pelanggan</a
+          >
+          <div class="nav-label nav-group">OPERASIONAL</div>
+          <a
+            class="{% if request.endpoint in ('sales','sale_form') %}active{% endif %}"
+            href="{{url_for('sales')}}"
+            ><span>▣</span> Penjualan</a
+          >
+          <a
+            class="{% if request.endpoint in ('reports','report_export') %}active{% endif %}"
+            href="{{url_for('reports')}}"
+            ><span>▥</span> Laporan</a
+          >
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="avatar">{{ current_user[0]|upper }}</div>
+          <div class="user-meta">
+            <strong>{{current_user}}</strong><small>Pengguna aktif</small>
+          </div>
+          <form method="post" action="{{url_for('logout')}}">
+            <input
+              type="hidden"
+              name="csrf_token"
+              value="{{csrf_token}}"
+            /><button type="submit" class="logout" title="Logout">↪</button>
+          </form>
+        </div>
+      </aside>
+      <div class="content-area">
+        <header class="topbar">
+          <div class="topbar-identity">
+            SISTEM INFORMASI PENJUALAN
+            <span class="desktop-only">/ APLIKASI CRUD PYTHON</span>
+          </div>
+          <div class="live-pill"><span class="dot"></span> Sistem Aktif</div>
+        </header>
+        <main class="main-content">
+          <div class="heading">
+            <div>
+              <div class="eyebrow">
+                TOKOKITA / {% block section %}BERANDA{% endblock %}
+              </div>
+              <h1>{% block heading %}Dashboard{% endblock %}</h1>
+              <p class="subtitle">
+                {% block subtitle %}Ringkasan aktivitas toko Anda.{% endblock %}
+              </p>
+            </div>
+            <div class="heading-action">
+              {% block heading_action %}{% endblock %}
+            </div>
+          </div>
+          {% with messages = get_flashed_messages(with_categories=true) %}{% if
+          messages %}{% for category,msg in messages %}
+          <div class="alert alert-{{category}}" role="alert">{{msg}}</div>
+          {% endfor %}{% endif %}{% endwith %} {% else %} {% with messages =
+          get_flashed_messages(with_categories=true) %}{% if messages %}
+          <div class="auth-alerts">
+            {% for category,msg in messages %}
+            <div class="alert alert-{{category}}">{{msg}}</div>
+            {% endfor %}
+          </div>
+          {% endif %}{% endwith %} {% endif %} {% block content %}{% endblock %}
+          {% if current_user %}
+          <footer>
+            © 2026 TokoKita · Proyek CRUD Python, Flask & PostgreSQL
+          </footer>
+        </main>
+      </div>
     </div>
-  </aside>
-  <div class="content-area">
-    <header class="topbar"><div class="topbar-identity">SISTEM INFORMASI PENJUALAN <span class="desktop-only">/ APLIKASI CRUD PYTHON</span></div><div class="live-pill"><span class="dot"></span> Sistem Aktif</div></header>
-    <main class="main-content">
-      <div class="heading"><div><div class="eyebrow">TOKOKITA / {% block section %}BERANDA{% endblock %}</div><h1>{% block heading %}Dashboard{% endblock %}</h1><p class="subtitle">{% block subtitle %}Ringkasan aktivitas toko Anda.{% endblock %}</p></div><div class="heading-action">{% block heading_action %}{% endblock %}</div></div>
-      {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category,msg in messages %}<div class="alert alert-{{category}}" role="alert">{{msg}}</div>{% endfor %}{% endif %}{% endwith %}
-{% else %}
-  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="auth-alerts">{% for category,msg in messages %}<div class="alert alert-{{category}}">{{msg}}</div>{% endfor %}</div>{% endif %}{% endwith %}
-{% endif %}
-{% block content %}{% endblock %}
-{% if current_user %}
-      <footer>© 2026 TokoKita · Proyek CRUD Python, Flask & PostgreSQL</footer>
-    </main>
-  </div>
-</div>
-{% endif %}
-</body>
+    {% endif %}
+  </body>
 </html>

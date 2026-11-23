@@ -1,0 +1,29 @@
+/* Estimasi total pembayaran */
+.sales-total-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  background: #f2fae9;
+  border: 1px solid #d7e8c4;
+  padding: 16px 18px;
+  border-radius: 12px;
+  min-height: 96px;
+}
+
+.sales-total-preview small {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #60774b;
+  font-weight: 800;
+}
+
+.sales-total-preview strong {
+  font-size: 22px;
+  color: #263b2a;
+}
+
+.sales-total-preview span {
+  font-size: 11px;
+  color: #768e67;
+}

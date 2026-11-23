@@ -18,9 +18,18 @@ from flask import (Flask, Response, abort, flash, g, redirect,
                    render_template, request, session, url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env")
-app = Flask(__name__, static_folder="static", static_url_path="/static")
+
+app = Flask(__name__, static_folder="public", static_url_path="/static")
+
+# Baca CSS dari file yang sudah ada
+css_file = ROOT / "public" / "style.css"
+app.jinja_env.globals["tokokita_css"] = css_file.read_text(
+    encoding="utf-8"
+)
+
 ON_VERCEL = bool(os.getenv("VERCEL"))
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if ON_VERCEL and not DATABASE_URL:

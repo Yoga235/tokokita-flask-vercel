@@ -8,9 +8,11 @@
     <head>
       <title>{% block title %}TokoKita{% endblock %} • Sistem Toko</title>
 
-      <style>
-        {% include 'style.css' %}
-      </style>
+      
+<style>
+    {{ tokokita_css | safe }}
+</style>
+
     </head>
   </head>
   <body>

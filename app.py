@@ -317,10 +317,46 @@ def customer_delete(item_id):
 @app.get("/sales")
 @require_login
 def sales():
-    rows = database().execute("""SELECT s.*, p.name product_name,p.sku, c.name customer_name
-                               FROM sales s JOIN products p ON p.id=s.product_id
-                               JOIN customers c ON c.id=s.customer_id ORDER BY s.id DESC""").fetchall()
-    return render_template("sales.html", rows=rows)
+    q = request.args.get("q", "").strip()[:100]
+    where = ""
+    params = ()
+
+    if q:
+        keyword = f"%{q}%"
+        where = """
+            WHERE c.name ILIKE ?
+               OR p.name ILIKE ?
+               OR p.sku ILIKE ?
+        """
+        params = (keyword, keyword, keyword)
+
+    rows = database().execute(
+        """
+        SELECT
+            s.*,
+            p.name AS product_name,
+            p.sku,
+            c.name AS customer_name
+        FROM sales s
+        JOIN products p ON p.id = s.product_id
+        JOIN customers c ON c.id = s.customer_id
+        """
+        + where
+        + " ORDER BY s.id DESC",
+        params
+    ).fetchall()
+
+    total_revenue = sum(row["total"] for row in rows)
+    total_quantity = sum(row["quantity"] for row in rows)
+
+    return render_template(
+        "sales.html",
+        rows=rows,
+        search=q,
+        total_revenue=total_revenue,
+        total_quantity=total_quantity
+    )
+
 
 
 @app.route("/sales/new", methods=["GET", "POST"])

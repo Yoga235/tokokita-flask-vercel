@@ -1,4 +1,174 @@
+
 {% extends 'base.html' %}
-{% block title %}{{'Edit' if row else 'Buat'}} Penjualan{% endblock %}{% block section %}TRANSAKSI / PENJUALAN{% endblock %}
-{% block heading %}{{'Edit' if row else 'Buat'}} Penjualan{% endblock %}{% block subtitle %}Satu transaksi memuat satu jenis barang; stok berubah otomatis setelah disimpan.{% endblock %}
-{% block content %}<section class="panel form-panel"><form method="post"><input type="hidden" name="csrf_token" value="{{csrf_token}}"><div class="form-grid"><label>Pelanggan <span class="required">*</span><select name="customer_id" required><option value="">Pilih pelanggan</option>{% for c in customers %}<option value="{{c.id}}" {% if request.form.get('customer_id', (row.customer_id|string) if row else '') == (c.id|string) %}selected{% endif %}>{{c.name}}</option>{% endfor %}</select></label><label>Barang <span class="required">*</span><select name="product_id" required><option value="">Pilih barang</option>{% for p in products %}<option value="{{p.id}}" {% if request.form.get('product_id', (row.product_id|string) if row else '') == (p.id|string) %}selected{% endif %}>{{p.sku}} · {{p.name}} · {{p.price|idr}} (stok {{p.stock}})</option>{% endfor %}</select></label><label>Jumlah Unit <span class="required">*</span><input type="number" name="quantity" min="1" step="1" required value="{{request.form.get('quantity', row.quantity if row else '1')}}"></label></div><div class="notice"><strong>Catatan:</strong> Harga diambil dari harga barang saat disimpan. Saat transaksi diedit atau dihapus, stok barang akan disesuaikan otomatis.</div><div class="form-actions"><a class="btn btn-ghost" href="{{url_for('sales')}}">Batal</a><button type="submit" class="btn btn-primary">Simpan Penjualan →</button></div></form></section>{% endblock %}
+
+{% block title %}
+{{ 'Edit' if row else 'Catat' }} Penjualan
+{% endblock %}
+
+{% block section %}TRANSAKSI / PENJUALAN{% endblock %}
+
+{% block heading %}
+{{ 'Edit' if row else 'Catat' }} Penjualan
+{% endblock %}
+
+{% block subtitle %}
+Pilih pembeli, barang, dan jumlah yang dibeli.
+{% endblock %}
+
+{% block content %}
+
+<section class="panel form-panel">
+    <form method="post">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token }}"
+        >
+
+        <div class="form-grid">
+
+            <label>
+                Nama Pembeli
+                <span class="required">*</span>
+
+                <select name="customer_id" required>
+                    <option value="">-- Pilih pembeli --</option>
+
+                    {% for c in customers %}
+                    <option
+                        value="{{ c.id }}"
+                        {% if request.form.get(
+                            'customer_id',
+                            (row.customer_id|string) if row else ''
+                        ) == (c.id|string) %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ c.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Barang yang Dibeli
+                <span class="required">*</span>
+
+                <select
+                    name="product_id"
+                    id="product_id"
+                    required
+                >
+                    <option value="">-- Pilih barang --</option>
+
+                    {% for p in products %}
+                    <option
+                        value="{{ p.id }}"
+                        data-price="{{ p.price }}"
+                        {% if request.form.get(
+                            'product_id',
+                            (row.product_id|string) if row else ''
+                        ) == (p.id|string) %}
+                        selected
+                        {% endif %}
+                    >
+                        {{ p.sku }} - {{ p.name }}
+                        - {{ p.price|idr }}
+                        (Stok: {{ p.stock }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Jumlah Dibeli
+                <span class="required">*</span>
+
+                <input
+                    type="number"
+                    name="quantity"
+                    id="quantity"
+                    min="1"
+                    step="1"
+                    required
+                    value="{{ request.form.get(
+                        'quantity',
+                        row.quantity if row else '1'
+                    ) }}"
+                >
+            </label>
+
+            <div class="sales-total-preview">
+                <small>ESTIMASI TOTAL PEMBAYARAN</small>
+
+                <strong id="sale-total">
+                    Rp 0
+                </strong>
+
+                <span>
+                    Harga satuan × jumlah barang
+                </span>
+            </div>
+        </div>
+
+        <div class="notice">
+            Harga dan total pembayaran dihitung
+            berdasarkan barang serta jumlah pembelian.
+            Total akhir akan dihitung kembali oleh server
+            ketika transaksi disimpan.
+        </div>
+
+        <div class="form-actions">
+            <a
+                href="{{ url_for('sales') }}"
+                class="btn btn-ghost"
+            >
+                Batal
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                Simpan Penjualan
+            </button>
+        </div>
+    </form>
+</section>
+
+<script>
+(function () {
+    const product = document.getElementById("product_id");
+    const quantity = document.getElementById("quantity");
+    const total = document.getElementById("sale-total");
+
+    function hitungTotal() {
+        const selected = product.selectedOptions[0];
+        const harga = Number(selected?.dataset.price);
+        const jumlah = Number(quantity.value);
+
+        if (
+            !product.value ||
+            !Number.isSafeInteger(harga) ||
+            !Number.isSafeInteger(jumlah) ||
+            jumlah < 1
+        ) {
+            total.textContent = "Pilih barang dan isi jumlah";
+            return;
+        }
+
+        const hasil = harga * jumlah;
+
+        if (!Number.isSafeInteger(hasil)) {
+            total.textContent = "Total terlalu besar";
+            return;
+        }
+
+        total.textContent = "Rp " + hasil.toLocaleString("id-ID");
+    }
+
+    product.addEventListener("change", hitungTotal);
+    quantity.addEventListener("input", hitungTotal);
+
+    hitungTotal();
+})();
+</script>
+
+{% endblock %}
